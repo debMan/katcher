@@ -1,4 +1,13 @@
+service: example_service
 topics:
   - test_a
   - test_b
-consumer: SRE
+consumer: test_consumer_group
+# A list of kafka addresses with port
+address:
+  - kafka.example.com:9092
+#timeouts in ms
+timeout: 6000
+offset_reset: earliest
+header_field: test_header_field
+auth:
