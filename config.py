@@ -27,6 +27,7 @@ class Config:
         dirname = path.dirname(path.abspath(__file__))
         with open(str(dirname + "/" + config_file), "r") as ymlfile:
             config = yaml.safe_load(ymlfile)
+        self.topics = config['topics']
+        self.topics = config['consumer']
 
         # All of the configuration is set in the conf attribute as dict
-        self.conf = config[self.topics]
