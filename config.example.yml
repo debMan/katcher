@@ -1,13 +1,24 @@
+## Required configs ##
+## just name the service for exported descriptions
 service: example_service
+## counter name for exported metrics
+counter_name: test_counter_name
+## kafka topics to fetch messages from
 topics:
-  - test_a
-  - test_b
+  - test_topic_a
+  - test_topic_b
+## consumer group name of this exporter
 consumer: test_consumer_group
-# A list of kafka addresses with port
+## a list of kafka addresses with port
 address:
   - kafka.example.com:9092
-#timeouts in ms
-timeout: 6000
-offset_reset: earliest
+## header name to fetch data from it
 header_field: test_header_field
-auth:
+
+## Optional configs default values ##
+## timeouts in ms
+timeout: 6000
+## offset reset policy, can be earliest or latest
+offset_reset: earliest
+## exposed http server port for prometheus scraper
+port: 80

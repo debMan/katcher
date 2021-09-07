@@ -1,11 +1,23 @@
+#!/usr/bin/env python
+
+"""An exporter to fetch a fields value and count it for prometheus."""
+
 import prometheus_client as prom
 
 from broker import KafkaHandler
 from config import Config
 
+
 header_field = Config().header_field
 service = Config().service
 counter_name = Config().counter_name
+counter = prom.Counter(
+    counter_name,
+    "The {}'s {} counter".format(service, header_field),
+    [header_field]
+)
+exposed_port = Config().port
+
 
 def export_header_field_value(headers, header_field=header_field):
     value = None
@@ -17,19 +29,13 @@ def export_header_field_value(headers, header_field=header_field):
 
 
 if __name__ == "__main__":
-    counter = prom.Counter(
-        counter_name,
-        "The {}'s {} counter".format(service, header_field),
-        [header_field, 'id']
-    )
-    prom.start_http_server(8080)
+    prom.start_http_server(exposed_port)
     consumer = KafkaHandler()
     for message in consumer.consume_loop():
-        api_index_id = None
         try:
             headers = message.headers()
-            id = export_header_field_value(headers, header_field)
-            counter.label(header_field, id).inc()
+            api_index_id = export_header_field_value(headers, header_field)
             consumer.try_commit()
+            counter.labels(int(api_index_id)).inc()
         except Exception as e:
             print("Unhandled error ", e)

@@ -1,3 +1,5 @@
+"""An kafka consumer handler wich loops on the messages and commit method."""
+
 from confluent_kafka import Consumer
 from confluent_kafka.cimpl import KafkaError, KafkaException
 

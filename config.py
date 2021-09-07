@@ -19,17 +19,18 @@ class Config:
             Containing the file path to config file
         """
 
-        self.config_file = getenv("CONFIG_ADDRESS", default=config_file)
-
         # The configuration is set in a yml file.
         dirname = path.dirname(path.abspath(__file__))
-        with open(str(dirname + "/" + config_file), "r") as ymlfile:
+        absolute_path = str(dirname + "/" + config_file)
+        self.config_file = getenv("CONFIG_ADDRESS", absolute_path)
+        with open(self.config_file, "r") as ymlfile:
             config = yaml.safe_load(ymlfile)
+        self.service = config["service"]
+        self.counter_name = config["counter_name"]
         self.topics = config["topics"]
         self.consumer = config["consumer"]
         self.address = config["address"]
-        self.timeout = config["timeout"]
-        self.offset_reset = config["offset_reset"]
         self.header_field = config["header_field"]
-        self.service = config["service"]
-        self.counter_name = config["counter_name"]
+        self.timeout = config.get("timeout", 6000)
+        self.offset_reset = config.get("offset_reset", "earliest")
+        self.port = config.get("port", 80)
