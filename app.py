@@ -21,10 +21,10 @@ exposed_port = Config().port
 
 def export_header_field_value(headers, header_field=header_field):
     value = None
-    while value is None:
-        item = headers.pop()
+    for item is header:
         if item[0] == header_field:
             value = item[1]
+            break
     return value
 
 
