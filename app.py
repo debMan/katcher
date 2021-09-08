@@ -2,19 +2,21 @@
 
 """An exporter to fetch a fields value and count it for prometheus."""
 
+from time import sleep
+
 import prometheus_client as prom
 
 from broker import KafkaHandler
 from config import Config
 
 
-header_field = Config().header_field
 service = Config().service
 counter_name = Config().counter_name
+header_field = Config().header_field
 counter = prom.Counter(
-    counter_name,
+    "{}_{}".format(service, counter_name),
     "The {}'s {} counter".format(service, header_field),
-    [header_field]
+    ["service", header_field, "topic"]
 )
 exposed_port = Config().port
 
@@ -41,6 +43,7 @@ if __name__ == "__main__":
     for message in consumer.consume_loop():
         try:
             headers = message.headers()
+            topic = message.topic()
             if headers != None:
                 api_index_id = export_header_field_value(
                     headers,
@@ -53,6 +56,7 @@ if __name__ == "__main__":
                     continue
                 finally:
                     consumer.try_commit()
-                counter.labels((api_index_id)).inc()
+                counter.labels(service, api_index_id, topic).inc()
         except Exception as e:
             print("ERROR: ", e)
+        sleep(5)
