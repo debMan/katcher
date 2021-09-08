@@ -59,4 +59,3 @@ if __name__ == "__main__":
                 counter.labels(service, api_index_id, topic).inc()
         except Exception as e:
             print("ERROR: ", e)
-        sleep(5)
