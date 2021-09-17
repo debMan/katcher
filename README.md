@@ -29,7 +29,8 @@ consumer: test_consumer_group
 address:
   - kafka.example.com:9092
 ## header name to fetch data from it
-header_field: test_header_field
+header_fields:
+  - test_header_field
 
 ## Optional configs ##
 ## timeouts in ms
