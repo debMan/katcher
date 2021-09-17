@@ -33,6 +33,7 @@ if __name__ == "__main__":
             headers['topic'] = message.topic()
         except Exception as e:
             print("ERROR: ", e)
+            # TODO: Raise exception here
         finally:
             consumer.try_commit()
             try:
