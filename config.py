@@ -30,7 +30,7 @@ class Config:
         self.topics = config["topics"]
         self.consumer = config["consumer"]
         self.address = config["address"]
-        self.header_field = config["header_field"]
+        self.header_fields = config["header_fields"]
         self.timeout = config.get("timeout", 6000)
         self.offset_reset = config.get("offset_reset", "earliest")
         self.port = config.get("port", 80)

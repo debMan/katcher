@@ -12,8 +12,9 @@ consumer: test_consumer_group
 ## a list of kafka addresses with port
 address:
   - kafka.example.com:9092
-## header name to fetch data from it
-header_field: test_header_field
+## header names to fetch data from it
+header_fields:
+  - test_header_field
 
 ## Optional configs default values ##
 ## timeouts in ms

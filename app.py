@@ -12,28 +12,13 @@ from config import Config
 
 service = Config().service
 counter_name = Config().counter_name
-header_field = Config().header_field
+header_fields = Config().header_fields
 counter = prom.Counter(
     "{}_{}".format(service, counter_name),
-    "The {}'s {} counter".format(service, header_field),
-    ["service", header_field, "topic"]
+    "The {}'s {} counter".format(service, (header_fields)),
+    header_fields + ["service", "topic"]
 )
 exposed_port = Config().port
-
-
-def export_header_field_value(headers, header_field=header_field):
-    value = None
-    try:
-        for item in headers:
-            if item[0] == header_field:
-                value = item[1]
-                break
-    except Exception as e:
-        print(
-            "ERROR: Error in looping on headers. Ensure topics are currect",
-            e
-        )
-    return value
 
 
 if __name__ == "__main__":
@@ -42,20 +27,16 @@ if __name__ == "__main__":
     print("Daemon started successfully on port {} ...".format(exposed_port))
     for message in consumer.consume_loop():
         try:
-            headers = message.headers()
-            topic = message.topic()
-            if headers != None:
-                api_index_id = export_header_field_value(
-                    headers,
-                    header_field
-                )
-                try:
-                    api_index_id = int(api_index_id)
-                except TypeError as e:
-                    print("ERROR: invalid header value")
-                    continue
-                finally:
-                    consumer.try_commit()
-                counter.labels(service, api_index_id, topic).inc()
+            headers = {k: v.decode('utf-8')
+                       for k, v in dict(message.headers()).items()}
+            headers['service'] = service
+            headers['topic'] = message.topic()
         except Exception as e:
             print("ERROR: ", e)
+        finally:
+            consumer.try_commit()
+            try:
+                counter.labels(**headers).inc()
+            except Exception as e:
+                print("ERROR: Error in mapping headers to configured ones", e)
+                raise e
