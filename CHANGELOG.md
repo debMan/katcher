@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v0.1.4] - 2021-09-17
+
+### Changed
+
+- Multiple header fields to export instead of one
+- Enhanced runtime performance
+
 ## [v0.1.3] - 2021-09-08
 
 ### Fixed
