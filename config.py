@@ -34,3 +34,16 @@ class Config:
         self.timeout = config.get("timeout", 6000)
         self.offset_reset = config.get("offset_reset", "earliest")
         self.port = config.get("port", 80)
+        if config.get("sentry", None) is not None:
+            self.sentry = config.get("sentry")
+            self.sentry["dsn"] = self.sentry.get("dsn", None)
+            self.sentry["release"] = self.sentry.get("release", None)
+            self.sentry["environment"] = self.sentry.get(
+                "environment", "production")
+            self.sentry["send-default-pii"] = self.sentry.get(
+                "send-default-pii", False)
+            self.sentry["debug"] = self.sentry.get("debug", False)
+            self.sentry["traces-sample-rate"] = self.sentry.get(
+                "traces-sample-rate", 1.0)
+        else:
+            self.sentry = None

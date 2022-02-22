@@ -5,6 +5,7 @@
 from time import sleep
 
 import prometheus_client as prom
+import sentry_sdk
 
 from broker import KafkaHandler
 from config import Config
@@ -19,12 +20,27 @@ counter = prom.Counter(
     header_fields + ["service", "topic"]
 )
 exposed_port = Config().port
+sentry = Config().sentry
+
+if sentry is not None:
+    sentry_sdk.init(
+        dsn = sentry.get("dsn"),
+        release = sentry.get("release"),
+        environment = sentry.get("environment"),
+        send_default_pii = sentry.get("send-default-pii"),
+        debug = sentry.get("debug"),
+        traces_sample_rate = sentry.get("traces-sample-rate")
+    )
+
+welcome_message = \
+    "Daemon started successfully on port {} ...".format(exposed_port)
 
 
 if __name__ == "__main__":
     prom.start_http_server(exposed_port)
     consumer = KafkaHandler()
-    print("Daemon started successfully on port {} ...".format(exposed_port))
+    print(welcome_message)
+    sentry_sdk.capture_message(welcome_message)
     for message in consumer.consume_loop():
         try:
             headers = {k: v.decode('utf-8')
@@ -33,10 +49,13 @@ if __name__ == "__main__":
             headers['topic'] = message.topic()
         except Exception as e:
             print("ERROR: ", e)
+            sentry_sdk.set_context("message-headers", message.headers())
+            sentry_sdk.capture_exception(e)
         finally:
             consumer.try_commit()
             try:
                 counter.labels(**headers).inc()
             except Exception as e:
                 print("ERROR: Error in mapping headers to configured ones", e)
-                raise e
+                sentry_sdk.set_context("prometheus-labels", headers)
+                sentry_sdk.capture_exception(e)
