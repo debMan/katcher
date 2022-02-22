@@ -6,6 +6,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v0.1.5] - 2022-02-22
+
+### Added
+
+- Added the [sentry](https://sentry.io) error tracking capability
+
+### Changed
+
+- Fixed [`requirements.txt`](requirements.txt) items versions
+
 ## [v0.1.4] - 2021-09-17
 
 ### Changed
