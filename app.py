@@ -49,6 +49,7 @@ if __name__ == "__main__":
             headers['topic'] = message.topic()
         except Exception as e:
             print("ERROR: ", e)
+            sentry_sdk.set_context("message-headers", message.headers())
             sentry_sdk.capture_exception(e)
         finally:
             consumer.try_commit()
@@ -56,4 +57,5 @@ if __name__ == "__main__":
                 counter.labels(**headers).inc()
             except Exception as e:
                 print("ERROR: Error in mapping headers to configured ones", e)
+                sentry_sdk.set_context("prometheus-labels", headers)
                 sentry_sdk.capture_exception(e)

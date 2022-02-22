@@ -36,14 +36,14 @@ class Config:
         self.port = config.get("port", 80)
         if config.get("sentry", None) is not None:
             self.sentry = config.get("sentry")
-            self.sentry["dsn"] = config.get("dsn", None)
-            self.sentry["release"] = config.get("release", None)
-            self.sentry["environment"] = config.get(
+            self.sentry["dsn"] = self.sentry.get("dsn", None)
+            self.sentry["release"] = self.sentry.get("release", None)
+            self.sentry["environment"] = self.sentry.get(
                 "environment", "production")
-            self.sentry["send-default-pii"] = config.get(
+            self.sentry["send-default-pii"] = self.sentry.get(
                 "send-default-pii", False)
-            self.sentry["debug"] = config.get("debug", False)
-            self.sentry["traces-sample-rate"] = config.get(
+            self.sentry["debug"] = self.sentry.get("debug", False)
+            self.sentry["traces-sample-rate"] = self.sentry.get(
                 "traces-sample-rate", 1.0)
         else:
             self.sentry = None
